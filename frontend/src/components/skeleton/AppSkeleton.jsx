@@ -1,5 +1,4 @@
 import React from "react";
-import PropertyCardSkeleton from "./PropertyCardSkeleton";
 
 const AppSkeleton = () => {
   return (
@@ -33,7 +32,18 @@ const AppSkeleton = () => {
           {/* Property List Skeleton */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-8">
             {Array.from({ length: 8 }).map((_, index) => (
-              <PropertyCardSkeleton key={index} />
+              <div className="animate-pulse" key={index}>
+                
+                <div className="w-full aspect-square bg-gray-200 rounded-xl"></div>
+                <div className="mt-2 space-y-2">
+                  <div className="flex justify-between items-center">
+                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                    <div className="h-4 bg-gray-200 rounded w-8"></div>
+                  </div>
+                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+                </div>
+              </div>
             ))}
           </div>
         </div>
