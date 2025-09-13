@@ -1,0 +1,263 @@
+const dummyProperties = [
+  {
+    host: "64f0b8f1a123456789abcdef",
+    title: "Sunny Apartment in City Center",
+    description: "A bright and modern apartment located in the heart of the city. Perfect for couples or solo travelers.",
+    propertyType: "APARTMENT",
+    category: "City Center",
+    location: "Jaipur",
+    amenities: ["Wi-Fi", "Air Conditioning", "Kitchen", "Washer", "TV", "Elevator"],
+    basePricePerNight: 2500,
+    imageUrls: [
+      "https://placehold.co/600x400",
+      "https://placehold.co/600x401",
+    ],
+    reviews: []
+  },
+  {
+    host: "64f0b8f1a123456789abcdef",
+    title: "Cozy Countryside House",
+    description: "Escape to the countryside with this cozy house surrounded by nature and fresh air.",
+    propertyType: "HOUSE",
+    category: "Countryside",
+    location: "Udaipur",
+    amenities: ["Wi-Fi", "Fireplace", "Kitchen", "Parking"],
+    basePricePerNight: 3500,
+    imageUrls: ["https://placehold.co/600x402"],
+    reviews: []
+  },
+  {
+    host: "64f0b8f1a123456789abcdef",
+    title: "Beachfront Hotel Room with Ocean View",
+    description: "Enjoy waking up to the sound of waves. This beachfront hotel room offers luxury and comfort.",
+    propertyType: "HOTEL",
+    category: "Beachfront",
+    location: "Goa",
+    amenities: ["Wi-Fi", "Air Conditioning", "Breakfast", "Pool", "Gym"],
+    basePricePerNight: 5500,
+    imageUrls: ["https://placehold.co/600x403"],
+    reviews: []
+  },
+  {
+    host: "64f0b8f1a123456789abcdef",
+    title: "Mountain Cabin Retreat",
+    description: "A rustic cabin with breathtaking mountain views. Perfect for a weekend getaway.",
+    propertyType: "HOUSE",
+    category: "Mountains",
+    location: "Manali",
+    amenities: ["Fireplace", "Kitchen", "Hot Tub", "Parking"],
+    basePricePerNight: 4500,
+    imageUrls: ["https://placehold.co/600x404"],
+    reviews: []
+  },
+  {
+    host: "64f0b8f1a123456789abcdef",
+    title: "Luxury Penthouse in City Center",
+    description: "Experience the height of luxury in this stunning penthouse with panoramic city views.",
+    propertyType: "APARTMENT",
+    category: "City Center",
+    location: "Mumbai",
+    amenities: ["Wi-Fi", "Elevator", "Kitchen", "Parking", "Gym"],
+    basePricePerNight: 7500,
+    imageUrls: ["https://placehold.co/600x405"],
+    reviews: []
+  },
+  {
+    host: "64f0b8f1a123456789abcdef",
+    title: "Unique Treehouse Stay",
+    description: "Sleep among the treetops in this magical treehouse, perfect for nature lovers.",
+    propertyType: "UNIQUE_STAY",
+    category: "Unique Stay",
+    location: "Rishikesh",
+    amenities: ["Wi-Fi", "Kitchen", "Hot Tub"],
+    basePricePerNight: 6000,
+    imageUrls: ["https://placehold.co/600x406"],
+    reviews: []
+  },
+  {
+    host: "64f0b8f1a123456789abcdef",
+    title: "Modern Apartment Near Beach",
+    description: "A chic apartment located just minutes from the beach. Ideal for sun and surf lovers.",
+    propertyType: "APARTMENT",
+    category: "Beachfront",
+    location: "Pondicherry",
+    amenities: ["Wi-Fi", "Air Conditioning", "Kitchen", "Parking"],
+    basePricePerNight: 4000,
+    imageUrls: ["https://placehold.co/600x407"],
+    reviews: []
+  },
+  {
+    host: "64f0b8f1a123456789abcdef",
+    title: "Charming Mountain Lodge",
+    description: "Relax in this cozy mountain lodge with scenic views and modern amenities.",
+    propertyType: "HOUSE",
+    category: "Mountains",
+    location: "Shimla",
+    amenities: ["Wi-Fi", "Fireplace", "Kitchen", "Parking"],
+    basePricePerNight: 4200,
+    imageUrls: ["https://placehold.co/600x408"],
+    reviews: []
+  },
+  {
+    host: "64f0b8f1a123456789abcdef",
+    title: "Stylish City Apartment",
+    description: "A stylish apartment in the center of the city with easy access to shops and restaurants.",
+    propertyType: "APARTMENT",
+    category: "City Center",
+    location: "Delhi",
+    amenities: ["Wi-Fi", "Air Conditioning", "Kitchen", "Washer"],
+    basePricePerNight: 3000,
+    imageUrls: ["https://placehold.co/600x409"],
+    reviews: []
+  },
+  {
+    host: "64f0b8f1a123456789abcdef",
+    title: "Countryside Villa with Pool",
+    description: "A luxurious villa in the countryside with a private pool and garden.",
+    propertyType: "HOUSE",
+    category: "Countryside",
+    location: "Jaipur",
+    amenities: ["Wi-Fi", "Pool", "Kitchen", "Parking", "BBQ Grill"],
+    basePricePerNight: 6500,
+    imageUrls: ["https://placehold.co/600x410"],
+    reviews: []
+  },
+  {
+    host: "64f0b8f1a123456789abcdef",
+    title: "Modern Hotel Room Downtown",
+    description: "A modern hotel room in the downtown area. Perfect for business and leisure travelers.",
+    propertyType: "HOTEL",
+    category: "City Center",
+    location: "Bengaluru",
+    amenities: ["Wi-Fi", "Breakfast", "Gym", "Parking"],
+    basePricePerNight: 4800,
+    imageUrls: ["https://placehold.co/600x411"],
+    reviews: []
+  },
+  {
+    host: "64f0b8f1a123456789abcdef",
+    title: "Secluded Beach House",
+    description: "A private beach house offering tranquility and stunning ocean views.",
+    propertyType: "HOUSE",
+    category: "Beachfront",
+    location: "Goa",
+    amenities: ["Wi-Fi", "Kitchen", "Pool", "Parking"],
+    basePricePerNight: 7200,
+    imageUrls: ["https://placehold.co/600x412"],
+    reviews: []
+  },
+  {
+    host: "64f0b8f1a123456789abcdef",
+    title: "Unique Loft Apartment",
+    description: "An industrial-style loft apartment with modern amenities in the heart of the city.",
+    propertyType: "APARTMENT",
+    category: "Trending",
+    location: "Kolkata",
+    amenities: ["Wi-Fi", "Air Conditioning", "Kitchen", "Washer"],
+    basePricePerNight: 3500,
+    imageUrls: ["https://placehold.co/600x413"],
+    reviews: []
+  },
+  {
+    host: "64f0b8f1a123456789abcdef",
+    title: "Luxury Cabin in Mountains",
+    description: "Enjoy the mountain breeze and breathtaking views in this luxurious cabin.",
+    propertyType: "HOUSE",
+    category: "Mountains",
+    location: "Manali",
+    amenities: ["Wi-Fi", "Fireplace", "Hot Tub", "Kitchen", "Parking"],
+    basePricePerNight: 6800,
+    imageUrls: ["https://placehold.co/600x414"],
+    reviews: []
+  },
+  {
+    host: "64f0b8f1a123456789abcdef",
+    title: "Chic Downtown Apartment",
+    description: "Modern apartment located in the lively downtown area, near cafes and shops.",
+    propertyType: "APARTMENT",
+    category: "City Center",
+    location: "Mumbai",
+    amenities: ["Wi-Fi", "Air Conditioning", "Kitchen", "Elevator"],
+    basePricePerNight: 4700,
+    imageUrls: ["https://placehold.co/600x415"],
+    reviews: []
+  },
+  {
+    host: "64f0b8f1a123456789abcdef",
+    title: "Beachfront Villa with Infinity Pool",
+    description: "A spectacular villa with direct beach access and an infinity pool.",
+    propertyType: "HOUSE",
+    category: "Beachfront",
+    location: "Kerala",
+    amenities: ["Wi-Fi", "Pool", "Kitchen", "Parking", "BBQ Grill"],
+    basePricePerNight: 12000,
+    imageUrls: ["https://placehold.co/600x416"],
+    reviews: []
+  },
+  {
+    host: "64f0b8f1a123456789abcdef",
+    title: "Treehouse Escape",
+    description: "A magical treehouse experience amidst lush greenery, perfect for a weekend getaway.",
+    propertyType: "UNIQUE_STAY",
+    category: "Unique Stay",
+    location: "Rishikesh",
+    amenities: ["Wi-Fi", "Kitchen", "Hot Tub"],
+    basePricePerNight: 5500,
+    imageUrls: ["https://placehold.co/600x417"],
+    reviews: []
+  },
+  {
+    host: "64f0b8f1a123456789abcdef",
+    title: "Modern Studio Apartment",
+    description: "Compact and modern studio apartment in the heart of the city.",
+    propertyType: "APARTMENT",
+    category: "Trending",
+    location: "Delhi",
+    amenities: ["Wi-Fi", "Air Conditioning", "Kitchen", "Washer"],
+    basePricePerNight: 3200,
+    imageUrls: ["https://placehold.co/600x418"],
+    reviews: []
+  },
+  {
+    host: "64f0b8f1a123456789abcdef",
+    title: "Mountain Retreat with Hot Tub",
+    description: "Escape to this peaceful mountain retreat with a private hot tub and scenic views.",
+    propertyType: "HOUSE",
+    category: "Mountains",
+    location: "Shimla",
+    amenities: ["Wi-Fi", "Fireplace", "Hot Tub", "Kitchen"],
+    basePricePerNight: 7000,
+    imageUrls: ["https://placehold.co/600x419"],
+    reviews: []
+  },
+  {
+    host: "64f0b8f1a123456789abcdef",
+    title: "Luxury Downtown Hotel Room",
+    description: "A high-end hotel room located downtown, offering all modern comforts.",
+    propertyType: "HOTEL",
+    category: "City Center",
+    location: "Bengaluru",
+    amenities: ["Wi-Fi", "Breakfast", "Gym", "Parking"],
+    basePricePerNight: 6000,
+    imageUrls: ["https://placehold.co/600x420"],
+    reviews: []
+  },
+   {
+  host: "64f0b8f1a123456789abcdef", // replace with real host ID
+  title: "Snowy Mountain Cabin in Kashmir",
+  description: "A cozy cabin in the heart of Kashmir surrounded by snow-capped mountains. Perfect for a peaceful winter retreat with breathtaking views and a warm fireplace.",
+  propertyType: "HOUSE",
+  category: "Mountains",
+  location: "Kashmir",
+  amenities: ["Wi-Fi", "Fireplace", "Kitchen", "Parking", "Hot Tub", "Heating"],
+  basePricePerNight: 8000,
+  imageUrls: [
+    "https://placehold.co/600x400?text=Kashmir+1",
+    "https://placehold.co/600x401?text=Kashmir+2",
+    "https://placehold.co/600x402?text=Kashmir+3"
+  ],
+  reviews: []
+}
+];
+
+export default dummyProperties;

@@ -1,0 +1,9 @@
+
+@import "tailwindcss";
+
+body {
+  font-family: 'Inter'; /* A clean, modern font */
+}
+button{
+  cursor: pointer;
+}
