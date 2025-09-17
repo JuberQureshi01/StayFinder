@@ -9,9 +9,9 @@ import {
     updateProperty,
     getPropertyById,
     getPropertyCoordinates
-} from './property.controller.js';
-import { verifyJWT } from '../../middlewares/auth.middleware.js';
-import { upload } from '../../middlewares/upload.middleware.js';
+} from '../controllers/property.controller.js';
+import { verifyJWT } from '../middlewares/auth.middleware.js';
+import { upload } from '../middlewares/upload.middleware.js';
 
 const router = Router();
 

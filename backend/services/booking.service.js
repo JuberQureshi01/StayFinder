@@ -1,5 +1,5 @@
-import { Property } from '../properties/property.model.js';
-import { ApiError } from '../../utils/apiError.js';
+import { Property } from '../model/property.model.js';
+import { ApiError } from '../utils/apiError.js';
 import { InstantBookFlow, RequestBookFlow } from './booking.strategy.js';
 
 export class BookingService {

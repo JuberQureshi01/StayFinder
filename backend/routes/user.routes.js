@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { registerUser, loginUser, getCurrentUser, updateUserAvatar,logoutUser, updateUserProfile } from './user.controller.js';
-import { verifyJWT } from '../../middlewares/auth.middleware.js';
-import { upload } from '../../middlewares/upload.middleware.js';
+import { registerUser, loginUser, getCurrentUser, updateUserAvatar,logoutUser, updateUserProfile } from '../controllers/user.controller.js';
+import { verifyJWT } from '../middlewares/auth.middleware.js';
+import { upload } from '../middlewares/upload.middleware.js';
 
 const router = Router();
 

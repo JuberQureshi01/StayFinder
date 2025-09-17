@@ -1,7 +1,7 @@
 
 import { Router } from 'express';
-import { createReview, getPropertyReviews, deleteReview } from './review.controller.js';
-import { verifyJWT } from '../../middlewares/auth.middleware.js';
+import { createReview, getPropertyReviews, deleteReview } from '../controllers/review.controller.js';
+import { verifyJWT } from '../middlewares/auth.middleware.js';
 
 const router = Router({ mergeParams: true });
 

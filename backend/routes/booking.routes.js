@@ -1,7 +1,7 @@
 
 import { Router } from 'express';
-import { createBooking, getMyBookings } from './booking.controller.js';
-import { verifyJWT } from '../../middlewares/auth.middleware.js';
+import { createBooking, getMyBookings } from '../controllers/booking.controller.js';
+import { verifyJWT } from '../middlewares/auth.middleware.js';
 
 const router = Router();
 

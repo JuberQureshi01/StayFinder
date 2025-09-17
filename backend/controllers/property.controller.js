@@ -1,11 +1,11 @@
-// ✅ FIX: setex method for ioredis instead of setEx
 
-import { asyncHandler } from '../../utils/asyncHandler.js';
-import { ApiError } from '../../utils/apiError.js';
-import { ApiResponse } from '../../utils/apiResponse.js';
-import { Property } from './property.model.js';
-import { redisClient } from '../../config/redis.js';
-import { uploadOnCloudinary } from '../../config/cloudinary.js';
+
+import { asyncHandler } from '../utils/asyncHandler.js';
+import { ApiError } from '../utils/apiError.js';
+import { ApiResponse } from '../utils/apiResponse.js';
+import { Property } from '../model/property.model.js';
+import { redisClient } from '../config/redis.js';
+import { uploadOnCloudinary } from '../config/cloudinary.js';
 import axios from 'axios';
 
 const CACHE_TTL = 3600; // 1 hour

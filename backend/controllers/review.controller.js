@@ -1,9 +1,9 @@
-import { asyncHandler } from '../../utils/asyncHandler.js';
-import { ApiError } from '../../utils/apiError.js';
-import { ApiResponse } from '../../utils/apiResponse.js';
-import { Review } from './review.model.js';
-import { Property } from '../properties/property.model.js';
-import { redisClient } from '../../config/redis.js'; 
+import { asyncHandler } from '../utils/asyncHandler.js';
+import { ApiError } from '../utils/apiError.js';
+import { ApiResponse } from '../utils/apiResponse.js';
+import { Review } from '../model/review.model.js';
+import { Property } from '../model/property.model.js';
+import { redisClient } from '../config/redis.js'; 
 
 const REVIEW_CACHE_EXPIRY = 60 * 5; 
 // CREATE REVIEW

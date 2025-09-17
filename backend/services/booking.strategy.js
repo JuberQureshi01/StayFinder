@@ -1,5 +1,5 @@
 
-import { Booking } from './booking.model.js';
+import { Booking } from '../model/booking.model.js';
 
 class BookingFlowStrategy {
     async book(property, bookingDetails) {

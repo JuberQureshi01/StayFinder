@@ -1,9 +1,9 @@
 
-import { asyncHandler } from '../../utils/asyncHandler.js';
-import { ApiError } from '../../utils/apiError.js';
-import { ApiResponse } from '../../utils/apiResponse.js';
-import { User } from './user.model.js';
-import { uploadOnCloudinary } from '../../config/cloudinary.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
+import { ApiError } from '../utils/apiError.js';
+import { ApiResponse } from '../utils/apiResponse.js';
+import { User } from '../model/user.model.js';
+import { uploadOnCloudinary } from '../config/cloudinary.js';
 
 const registerUser = asyncHandler(async (req, res) => {
     const { email, password, fullName } = req.body;

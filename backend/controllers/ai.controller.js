@@ -1,7 +1,7 @@
 
-import { asyncHandler } from '../../utils/asyncHandler.js';
-import { ApiResponse } from '../../utils/apiResponse.js';
-import { aiService } from './ai.service.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
+import { ApiResponse } from '../utils/apiResponse.js';
+import { aiService } from '../services/ai.service.js';
 
 
 const getAIItinerary = asyncHandler(async (req, res) => {

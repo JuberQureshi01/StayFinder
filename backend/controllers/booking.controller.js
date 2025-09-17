@@ -1,9 +1,9 @@
 
-import { asyncHandler } from '../../utils/asyncHandler.js';
-import { ApiResponse } from '../../utils/apiResponse.js';
-import { BookingService } from './booking.service.js';
-import { Booking } from './booking.model.js';
-import { ApiError } from '../../utils/apiError.js'; 
+import { asyncHandler } from '../utils/asyncHandler.js';
+import { ApiResponse } from '../utils/apiResponse.js';
+import { BookingService } from '../services/booking.service.js';
+import { Booking } from '../model/booking.model.js';
+import { ApiError } from '../utils/apiError.js'; 
 
 const bookingService = new BookingService();
 

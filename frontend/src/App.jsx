@@ -13,7 +13,7 @@ import CreateListingPage from './pages/CreateListingPage';
 import EditListingPage from './pages/EditListingPage';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCurrentUser } from './features/auth/authSlice';
-import AppSkeleton from './components/Skeleton/AppSkeleton';
+import AppSkeleton from './components/skeleton/AppSkeleton';
 
 function App() {
 

@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { Review } from '../reviews/review.model.js';
+import { Review } from './review.model.js';
 
 const propertySchema = new Schema({
     host: {

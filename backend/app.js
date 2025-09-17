@@ -5,11 +5,11 @@ import { connectRedis } from './config/redis.js';
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import userRouter from './features/users/user.routes.js';
-import propertyRouter from './features/properties/property.routes.js';
-import bookingRouter from './features/bookings/booking.routes.js';
-import reviewRouter from './features/reviews/review.routes.js';
-import aiRouter from './features/ai/ai.routes.js';
+import userRouter from './routes/user.routes.js';
+import propertyRouter from './routes/property.routes.js';
+import bookingRouter from './routes/booking.routes.js';
+import reviewRouter from './routes/review.routes.js';
+import aiRouter from './routes/ai.routes.js';
 
 const app = express();
 dotenv.config({
@@ -19,7 +19,7 @@ dotenv.config({
 const PORT = 8000 || process.env.PORT;
 
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: process.env.CORS_ORIGIN,
     credentials: true
 }));
 app.use(express.json({ limit: "16kb" }));
