@@ -67,9 +67,9 @@ const EditListingPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const submissionData = new FormData();
-    Object.keys(formData).forEach((key) => {
-      submissionData.append(key, formData[key]);
-    });
+    for (const [key, value] of Object.entries(formData)) {
+      submissionData.append(key, value);
+    }
     imageFiles.forEach((file) => {
       submissionData.append("images", file);
     });
@@ -98,7 +98,6 @@ const EditListingPage = () => {
           onSubmit={handleSubmit}
           className="space-y-6 bg-white p-6 rounded-lg shadow-md"
         >
-          {/* All Form Fields */}
           <div>
             <label htmlFor="title" className="block text-sm font-medium">
               Title
@@ -214,7 +213,6 @@ const EditListingPage = () => {
             />
           </div>
 
-          {/* Image Upload Section */}
           <div>
             <label className="block text-sm font-medium mb-2">
               Add More Images
@@ -247,7 +245,6 @@ const EditListingPage = () => {
             </div>
           </div>
 
-          {/* Image Previews */}
           {imagePreviews.length > 0 && (
             <div>
               <label className="block text-sm font-medium mb-2">

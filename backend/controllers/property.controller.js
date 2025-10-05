@@ -1,39 +1,36 @@
-
-
-import { asyncHandler } from '../utils/asyncHandler.js';
-import { ApiError } from '../utils/apiError.js';
-import { ApiResponse } from '../utils/apiResponse.js';
+import { asyncHandler } from '../middlewares/asyncHandler.js';
 import { Property } from '../model/property.model.js';
 import { redisClient } from '../config/redis.js';
 import { uploadOnCloudinary } from '../config/cloudinary.js';
 import axios from 'axios';
+import mongoose from 'mongoose';
 
-const CACHE_TTL = 3600; // 1 hour
+const CACHE_TTL = 360;
 
-// Create Property
+
 const createProperty = asyncHandler(async (req, res) => {
     const hostId = req.user._id;
     const { title, description, propertyType, category, location, basePricePerNight, amenities } = req.body;
 
     if (!title || !description || !location) {
-        return res.status(401).json(
-            new ApiResponse(401,{}, "Title, description, and location are required.")
-        );
+        return res.status(400).json({
+            success: false,
+            message: "Title, description, and location are required."
+        });
     }
 
     const imageFiles = req.files;
     if (!imageFiles || imageFiles.length === 0) {
-        return res.status(401).json(
-            new ApiResponse(400, "At least one image is required.")
-        );
+        return res.status(400).json({
+            success: false,
+            message: "At least one image is required."
+        });
     }
 
     const imageUrls = [];
     for (const file of imageFiles) {
         const result = await uploadOnCloudinary(file.path);
-        if (result && result.url) {
-            imageUrls.push(result.url);
-        }
+        if (result && result.url) imageUrls.push(result.url);
     }
 
     const property = await Property.create({
@@ -44,33 +41,40 @@ const createProperty = asyncHandler(async (req, res) => {
         category,
         location,
         basePricePerNight,
-        amenities: amenities ? amenities.split(',').map(item => item.trim()) : [],
+        amenities: amenities ? amenities.split(',').map(i => i.trim()) : [],
         imageUrls
     });
 
     if (!property) {
-         return res.status(401).json(
-            new ApiResponse(404, {}, "Failed to create the property")
-        );
+        return res.status(500).json({
+            success: false,
+            message: "Failed to create the property."
+        });
     }
 
-    // Clear relevant caches
     await redisClient.del('allProperties');
     await redisClient.del(`myProperties:${hostId}`);
 
-    return res.status(201).json(new ApiResponse(201, property, "Property created successfully."));
+    res.status(201).json({
+        success: true,
+        message: "Property created successfully.",
+        data: property
+    });
 });
 
-// Get All Properties
+
+
 const getAllProperties = asyncHandler(async (req, res) => {
     const { location, propertyType, minPrice, maxPrice, amenities, category } = req.query;
+    const cacheKey = `allProperties:${JSON.stringify(req.query)}`;
 
-    const queryKey = `allProperties:${JSON.stringify(req.query)}`;
-
-    // Try cache first
-    const cachedData = await redisClient.get(queryKey);
-    if (cachedData) {
-        return res.status(200).json(new ApiResponse(200, JSON.parse(cachedData), "Properties retrieved from cache."));
+    const cached = await redisClient.get(cacheKey);
+    if (cached) {
+        return res.status(200).json({
+            success: true,
+            message: "Properties retrieved from cache.",
+            data: JSON.parse(cached)
+        });
     }
 
     const query = {};
@@ -83,92 +87,123 @@ const getAllProperties = asyncHandler(async (req, res) => {
         if (maxPrice) query.basePricePerNight.$lte = Number(maxPrice);
     }
     if (amenities) {
-        const amenitiesList = amenities.split(',');
-        query.amenities = { $all: amenitiesList };
+        query.amenities = { $all: amenities.split(',') };
     }
 
     const properties = await Property.find(query).populate('host', 'profile.fullName');
 
-    // Save to cache 
-    await redisClient.setex(queryKey, CACHE_TTL, JSON.stringify(properties));
+    await redisClient.setex(cacheKey, CACHE_TTL, JSON.stringify(properties));
 
-    return res.status(200).json(new ApiResponse(200, properties, "Properties retrieved successfully."));
+    res.status(200).json({
+        success: true,
+        message: "Properties retrieved successfully.",
+        data: properties
+    });
 });
 
-// Delete Property
+
+
 const deleteProperty = asyncHandler(async (req, res) => {
     const { propertyId } = req.params;
     const hostId = req.user._id;
 
     const property = await Property.findById(propertyId);
     if (!property) {
-        return res.status(200).json(new ApiResponse(404, "Property not found."));
+        return res.status(404).json({ success: false, message: "Property not found." });
     }
 
     if (property.host.toString() !== hostId.toString()) {
-        return res.status(200).json(new ApiResponse(403, "You are not authorized to delete this property."));
+        return res.status(403).json({ success: false, message: "You are not authorized to delete this property." });
     }
 
     await property.deleteOne();
 
-    // Clear relevant caches
     await redisClient.del('allProperties');
     await redisClient.del(`myProperties:${hostId}`);
     await redisClient.del(`property:${propertyId}`);
 
-    return res.status(200).json(
-        new ApiResponse(200, {}, "Property and associated reviews deleted successfully.")
-    );
+    res.status(200).json({
+        success: true,
+        message: "Property deleted successfully."
+    });
 });
 
-// Get My Properties 
+
+
 const getMyProperties = asyncHandler(async (req, res) => {
+
     const hostId = req.user._id;
     const cacheKey = `myProperties:${hostId}`;
 
-    const cachedData = await redisClient.get(cacheKey);
-    if (cachedData) {
-        return res.status(200).json(new ApiResponse(200, JSON.parse(cachedData), "Host properties retrieved from cache."));
+    const cached = await redisClient.get(cacheKey);
+    if (cached) {
+        return res.status(200).json({
+            success: true,
+            message: "Properties retrieved from cache.",
+            data: JSON.parse(cached)
+        });
     }
 
     const properties = await Property.find({ host: hostId }).sort({ createdAt: -1 });
 
-    await redisClient.setex(cacheKey, CACHE_TTL, JSON.stringify(properties)); 
-
-    return res.status(200).json(new ApiResponse(200, properties, "Host properties retrieved successfully."));
+    await redisClient.setex(cacheKey, CACHE_TTL, JSON.stringify(properties));
+    res.status(200).json({
+        success: true,
+        message: "Properties retrieved successfully.",
+        data: properties
+    });
 });
 
-// Get Property By ID with Caching
+
+
 const getPropertyById = asyncHandler(async (req, res) => {
     const { propertyId } = req.params;
     const cacheKey = `property:${propertyId}`;
 
-    const cachedData = await redisClient.get(cacheKey);
-    if (cachedData) {
-        return res.status(200).json(new ApiResponse(200, JSON.parse(cachedData), "Property details retrieved from cache."));
+    const cached = await redisClient.get(cacheKey);
+    if (cached) {
+        return res.status(200).json({
+            success: true,
+            message: "Property details retrieved from cache.",
+            data: JSON.parse(cached)
+        });
     }
 
     const property = await Property.findById(propertyId).populate('host', 'profile.fullName');
     if (!property) {
-        throw new ApiError(404, "Property not found.");
+        return res.status(404).json({ success: false, message: "Property not found." });
     }
 
-    await redisClient.setex(cacheKey, CACHE_TTL, JSON.stringify(property)); 
+    await redisClient.setex(cacheKey, CACHE_TTL, JSON.stringify(property));
 
-    return res.status(200).json(new ApiResponse(200, property, "Property details retrieved successfully."));
+    res.status(200).json({
+        success: true,
+        message: "Property details retrieved successfully.",
+        data: property
+    });
 });
 
-// Get Property By ID for Host
+
 const getPropertyByIdForHost = asyncHandler(async (req, res) => {
     const { propertyId } = req.params;
+
     const property = await Property.findOne({ _id: propertyId });
     if (!property) {
-        throw new ApiError(404, "Property not found or you are not the host.");
+        return res.status(404).json({
+            success: false,
+            message: "Property not found or you are not the host."
+        });
     }
-    return res.status(200).json(new ApiResponse(200, property, "Property details retrieved successfully."));
+
+    res.status(200).json({
+        success: true,
+        message: "Property details retrieved successfully.",
+        data: property
+    });
 });
 
-// Update Property 
+
+
 const updateProperty = asyncHandler(async (req, res) => {
     const { propertyId } = req.params;
     const hostId = req.user._id;
@@ -176,18 +211,19 @@ const updateProperty = asyncHandler(async (req, res) => {
 
     const property = await Property.findOne({ _id: propertyId, host: hostId });
     if (!property) {
-        return res.status(200).json(new ApiResponse(404, "Property not found or you are not the host."));
+        return res.status(404).json({
+            success: false,
+            message: "Property not found or unauthorized."
+        });
     }
 
     if (req.files && req.files.length > 0) {
         const newImageUrls = [];
         for (const file of req.files) {
             const result = await uploadOnCloudinary(file.path);
-            if (result && result.url) {
-                newImageUrls.push(result.url);
-            }
+            if (result && result.url) newImageUrls.push(result.url);
         }
-        property.imageUrls = [...newImageUrls];
+        property.imageUrls = newImageUrls;
     }
 
     property.title = title || property.title;
@@ -196,46 +232,54 @@ const updateProperty = asyncHandler(async (req, res) => {
     property.category = category || property.category;
     property.location = location || property.location;
     property.basePricePerNight = basePricePerNight || property.basePricePerNight;
-    property.amenities = amenities ? amenities.split(',').map(item => item.trim()) : property.amenities;
+    property.amenities = amenities ? amenities.split(',').map(a => a.trim()) : property.amenities;
 
     await property.save({ validateBeforeSave: false });
 
-    // Clear relevant caches
     await redisClient.del('allProperties');
     await redisClient.del(`myProperties:${hostId}`);
     await redisClient.del(`property:${propertyId}`);
 
-    return res.status(200).json(new ApiResponse(200, property, "Property updated successfully."));
+    res.status(200).json({
+        success: true,
+        message: "Property updated successfully.",
+        data: property
+    });
 });
+
+
 
 const getPropertyCoordinates = asyncHandler(async (req, res) => {
     const { propertyId } = req.params;
 
     const property = await Property.findById(propertyId).select('location');
     if (!property) {
-        throw new ApiError(404, "Property not found.");
+        return res.status(404).json({
+            success: false,
+            message: "Property not found."
+        });
     }
 
     const locationQuery = encodeURIComponent(property.location);
     const mapboxUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${locationQuery}.json?access_token=${process.env.MAPBOX_API_KEY}&limit=1`;
 
-    try {
-        const response = await axios.get(mapboxUrl);
-        const features = response.data.features;
+    const response = await axios.get(mapboxUrl);
+    const features = response.data.features;
 
-        if (!features || features.length === 0) {
-            throw new ApiError(404, "Could not find coordinates for this location.");
-        }
-
-        const [longitude, latitude] = features[0].center;
-        
-        return res.status(200).json(
-            new ApiResponse(200, { longitude, latitude }, "Coordinates retrieved successfully.")
-        );
-
-    } catch (error) {
-        throw new ApiError(500, "Failed to fetch geocoding data from Mapbox.");
+    if (!features || features.length === 0) {
+        return res.status(404).json({
+            success: false,
+            message: "Could not find coordinates for this location."
+        });
     }
+
+    const [longitude, latitude] = features[0].center;
+
+    res.status(200).json({
+        success: true,
+        message: "Coordinates retrieved successfully.",
+        data: { longitude, latitude }
+    });
 });
 
 export {

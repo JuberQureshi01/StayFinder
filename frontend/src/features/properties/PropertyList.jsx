@@ -1,37 +1,24 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProperties } from "./propertySlice";
 import PropertyCard from "./PropertyCard";
-import axiosInstance from "../../api/axios";
 import PropertyCardSkeleton from "../../components/skeleton/PropertyCardSkeleton";
 
 const PropertyList = ({ category }) => {
-  const [properties, setProperties] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const { properties, loading, error } = useSelector(
+    (state) => state.properties
+  );
 
   useEffect(() => {
-    const fetchProperties = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await axiosInstance.get(
-          `/properties?category=${category}`
-        );
-        setProperties(response.data.data);
-      } catch (err) {
-        setError("Failed to fetch properties. Please try again later.");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProperties();
-  }, [category]);
+    dispatch(fetchProperties(category));
+  }, [dispatch, category]);
 
   if (loading) {
-      return (
+    return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-3">
-        {Array.from({ length: 8 }).map((_, index) => (
+        {[1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
           <PropertyCardSkeleton key={index} />
         ))}
       </div>

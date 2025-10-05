@@ -46,7 +46,7 @@ const BookingForm = ({ property }) => {
 
     const result = await dispatch(createBooking(bookingData));
     if (createBooking.fulfilled.match(result)) {
-      navigate("/my-bookings"); 
+      navigate("/my-bookings");
     }
   };
 
@@ -104,30 +104,26 @@ const BookingForm = ({ property }) => {
       >
         {loading ? "Processing..." : "Book"}
       </button>
-{numberOfNights > 0 && (
-  <div className="mt-4 space-y-2 text-sm">
-    {/* Base price calculation */}
-    <div className="flex justify-between">
-      <span>
-        ₹{property.basePricePerNight} x {numberOfNights} nights
-      </span>
-      <span>₹{totalPrice}</span>
-    </div>
+      {numberOfNights > 0 && (
+        <div className="mt-4 space-y-2 text-sm">
+          <div className="flex justify-between">
+            <span>
+              ₹{property.basePricePerNight} x {numberOfNights} nights
+            </span>
+            <span>₹{totalPrice}</span>
+          </div>
 
-    {/* GST Calculation */}
-    <div className="flex justify-between text-gray-600">
-      <span>GST (18%)</span>
-      <span>₹{(totalPrice * 0.18).toFixed(2)}</span>
-    </div>
+          <div className="flex justify-between text-gray-600">
+            <span>GST (18%)</span>
+            <span>₹{(totalPrice * 0.18).toFixed(2)}</span>
+          </div>
 
-    {/* Final Total */}
-    <div className="flex justify-between font-bold border-t pt-2 mt-2">
-      <span>Total</span>
-      <span>₹{(totalPrice + totalPrice * 0.18).toFixed(2)}</span>
-    </div>
-  </div>
-)}
-
+          <div className="flex justify-between font-bold border-t pt-2 mt-2">
+            <span>Total</span>
+            <span>₹{(totalPrice + totalPrice * 0.18).toFixed(2)}</span>
+          </div>
+        </div>
+      )}
     </form>
   );
 };

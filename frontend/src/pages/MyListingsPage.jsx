@@ -16,13 +16,7 @@ const MyListingsPage = () => {
     dispatch(fetchMyProperties());
   }, [dispatch]);
   const handleDelete = (propertyId) => {
-    if (
-      window.confirm(
-        "Are you sure you want to delete this listing? This action cannot be undone."
-      )
-    ) {
-      dispatch(deleteProperty(propertyId));
-    }
+    dispatch(deleteProperty(propertyId));
   };
 
   return (

@@ -1,27 +1,45 @@
-
-import { asyncHandler } from '../utils/asyncHandler.js';
-import { ApiResponse } from '../utils/apiResponse.js';
-import { BookingService } from '../services/booking.service.js';
+import { asyncHandler } from '../middlewares/asyncHandler.js';
 import { Booking } from '../model/booking.model.js';
-import { ApiError } from '../utils/apiError.js'; 
+import { Property } from '../model/property.model.js';
 
-const bookingService = new BookingService();
 
 const createBooking = asyncHandler(async (req, res) => {
     const { propertyId, checkInDate, checkOutDate } = req.body;
     const guestId = req.user._id;
 
-    const newBooking = await bookingService.createBooking(
-        propertyId,
-        guestId,
-        checkInDate,
-        checkOutDate
-    );
+    const property = await Property.findById(propertyId);
+    if (!property) {
+        return res.status(404).json({ success: false, message: "Property not found." });
+    }
 
-    return res.status(201).json(
-        new ApiResponse(201, newBooking, "Booking created successfully.")
-    );
+    const checkIn = new Date(checkInDate);
+    const checkOut = new Date(checkOutDate);
+    const nights = (checkOut - checkIn) / (1000 * 60 * 60 * 24);
+
+    if (nights <= 0) {
+        return res.status(400).json({ success: false, message: "Check-out date must be after check-in date." });
+    }
+
+    const totalPrice = nights * property.basePricePerNight;
+
+
+    const newBooking = await Booking.create({
+        property: propertyId,
+        guest: guestId,
+        host: property.host,
+        checkInDate,
+        checkOutDate,
+        totalPrice,
+        status: 'CONFIRMED',
+    });
+
+    return res.status(201).json({
+        success: true,
+        message: "Booking created successfully.",
+        data: newBooking,
+    });
 });
+
 
 const getMyBookings = asyncHandler(async (req, res) => {
     const guestId = req.user._id;
@@ -29,20 +47,23 @@ const getMyBookings = asyncHandler(async (req, res) => {
     const bookings = await Booking.find({ guest: guestId })
         .populate({
             path: 'property',
-            select: 'title location imageUrls basePricePerNight' 
+            select: 'title location imageUrls basePricePerNight'
         })
-        .sort({ checkInDate: -1 }); 
+        .sort({ checkInDate: -1 });
 
-    if (!bookings) {
-       
-         return res.status(200).json(
-        new ApiResponse(404, "Could not find any bookings for this user."));
+    if (!bookings || bookings.length === 0) {
+        return res.status(404).json({
+            success: false,
+            message: "No bookings found for this user.",
+            data: [],
+        });
     }
 
-    return res.status(200).json(
-        new ApiResponse(200, bookings, "User bookings retrieved successfully.")
-    );
+    return res.status(200).json({
+        success: true,
+        message: "User bookings retrieved successfully.",
+        data: bookings,
+    });
 });
-
 
 export { createBooking, getMyBookings };

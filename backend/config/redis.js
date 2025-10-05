@@ -1,5 +1,4 @@
 import Redis from 'ioredis';
-import { ApiError } from '../utils/apiError.js';
 
 let redisClient;
 
@@ -17,7 +16,7 @@ const connectRedis = () => {
         });
 
     } catch (error) {
-        throw new ApiError(500, "Could not create Redis client.", error);
+        console.error(500, "Could not create Redis client.", error);
     }
 };
 

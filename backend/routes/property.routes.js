@@ -1,11 +1,11 @@
 
 import { Router } from 'express';
-import { 
-    createProperty, 
-    getAllProperties, 
-    deleteProperty, 
-    getMyProperties, 
-    getPropertyByIdForHost, 
+import {
+    createProperty,
+    getAllProperties,
+    deleteProperty,
+    getMyProperties,
+    getPropertyByIdForHost,
     updateProperty,
     getPropertyById,
     getPropertyCoordinates
@@ -15,16 +15,14 @@ import { upload } from '../middlewares/upload.middleware.js';
 
 const router = Router();
 
-// --- Public Routes ---
-router.route("/").get(getAllProperties);
-router.route("/my-properties").get(verifyJWT, getMyProperties);
-router.route("/").post(verifyJWT, upload.array('images', 10), createProperty);
-router.route("/:propertyId/coordinates").get(getPropertyCoordinates);
-router.route("/host/:propertyId").get(verifyJWT, getPropertyByIdForHost);
-router.route("/:propertyId").get(getPropertyById);
 
-router.route("/:propertyId")
-    .patch(verifyJWT, upload.array('images', 10), updateProperty)
-    .delete(verifyJWT, deleteProperty);
+router.get("/", getAllProperties);
+router.get("/my-properties", verifyJWT, getMyProperties);
+router.get("/:propertyId", getPropertyById);
+router.get("/:propertyId/coordinates", getPropertyCoordinates);
+router.post("/", verifyJWT, upload.array("images", 10), createProperty);
+router.get("/host/:propertyId", verifyJWT, getPropertyByIdForHost);
+router.patch("/:propertyId", verifyJWT, upload.array("images", 10), updateProperty);
+router.delete("/:propertyId", verifyJWT, deleteProperty);
 
 export default router;

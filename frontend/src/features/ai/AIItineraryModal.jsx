@@ -8,7 +8,6 @@ import ReactMarkdown from 'react-markdown';
 const AIItineraryModal = ({ location, onClose }) => {
     const dispatch = useDispatch();
     const { itinerary, loading } = useSelector((state) => state.ai);
-
     const [tripType, setTripType] = useState('Family');
     const [budget, setBudget] = useState('Mid-range');
     const [durationInDays, setDurationInDays] = useState(3);

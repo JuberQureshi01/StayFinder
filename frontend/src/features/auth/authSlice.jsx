@@ -5,7 +5,6 @@ import toast from 'react-hot-toast';
 
 const initialState = {
     user: null,
-    token: null, 
     isAuthenticated: false,
     loading: true, 
     error: null,
@@ -52,13 +51,12 @@ export const logoutUser = createAsyncThunk(
 );
 
 
-// --- Async thunk to get current user from their cookie ---
 export const getCurrentUser = createAsyncThunk(
     'auth/getCurrentUser',
     async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get('/users/me');
-            return response.data.data; // This will be the user object
+            return response.data.data;
         } catch (error) {
             return rejectWithValue(error.response?.data);
         }
@@ -71,13 +69,11 @@ const authSlice = createSlice({
     reducers: {
         logout: (state) => {
             state.user = null;
-            state.token = null;
             state.isAuthenticated = false;
         },
     },
     extraReducers: (builder) => {
         builder
-            // Login cases
             .addCase(loginUser.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -86,13 +82,11 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.isAuthenticated = true;
                 state.user = action.payload.user;
-                state.token = action.payload.accessToken;
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })
-            // Register cases
             .addCase(registerUser.pending, (state) => {
                 state.loading = true;
             })
@@ -103,13 +97,10 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-            // Logout cases
             .addCase(logoutUser.fulfilled, (state) => {
                 state.isAuthenticated = false;
                 state.user = null;
-                state.token = null;
             })
-             // Session check cases
             .addCase(getCurrentUser.pending, (state) => {
                 state.loading = true;
             })

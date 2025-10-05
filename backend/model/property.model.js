@@ -44,10 +44,9 @@ const propertySchema = new Schema({
     }]
 }, { timestamps: true });
 
-// Before a property is removed, this function will execute.
+
 propertySchema.pre('deleteOne', { document: true, query: false }, async function(next) {
     try {
-        // 'this' correctly refers to the document here.
         const propertyId = this._id;
         await Review.deleteMany({ property: propertyId });
         next();

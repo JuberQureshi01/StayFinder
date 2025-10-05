@@ -1,14 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom"; 
 import { createProperty } from "../features/properties/propertySlice";
 import MainLayout from "../components/layout/MainLayout";
 import { UploadCloud, X, Bot } from "lucide-react";
+import toast from "react-hot-toast";
 
 const CreateListingPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading } = useSelector((state) => state.properties);
+  const {isAuthenticated} = useSelector((state)=>state.auth);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -20,6 +22,13 @@ const CreateListingPage = () => {
   });
   const [imageFiles, setImageFiles] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
+
+  useEffect(()=>{
+     if(!isAuthenticated){
+    toast.error("Login First to procced");
+    navigate("/login")
+  }
+  },[]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -222,7 +231,6 @@ const CreateListingPage = () => {
             </div>
           </div>
 
-          {/* Image Previews */}
           {imagePreviews.length > 0 && (
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
               {imagePreviews.map((preview, index) => (

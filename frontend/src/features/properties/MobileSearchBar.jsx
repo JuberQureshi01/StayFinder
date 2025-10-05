@@ -1,6 +1,5 @@
-
-import React from 'react';
-import { Search } from 'lucide-react';
+import React from "react";
+import { Search } from "lucide-react";
 
 const MobileSearchBar = ({ onClick }) => {
   return (
@@ -14,7 +13,9 @@ const MobileSearchBar = ({ onClick }) => {
         </div>
         <div className="ml-2 flex-grow">
           <p className="font-semibold">Where to?</p>
-          <p className="text-sm text-gray-500">Anywhere · Any week · Add guests</p>
+          <p className="text-sm text-gray-500">
+            Anywhere · Any week · Add guests
+          </p>
         </div>
       </button>
     </div>

@@ -12,7 +12,7 @@ import { format } from "date-fns";
 const ProfilePage = () => {
   const dispatch = useDispatch();
   const { profile, loading } = useSelector((state) => state.user);
-  const { user } = useSelector((state) => state.auth); 
+  const { user } = useSelector((state) => state.auth);
   const [fullName, setFullName] = useState("");
   const fileInputRef = useRef(null);
 
@@ -35,7 +35,7 @@ const ProfilePage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(updateUserProfile({ fullName}));
+    dispatch(updateUserProfile({ fullName }));
   };
 
   if (loading && !profile) {
@@ -75,7 +75,10 @@ const ProfilePage = () => {
                   onChange={handleAvatarChange}
                 />
               </div>
-              <h2 className="text-xl font-bold flex gap-2 justify-center"><User/>{user.profile.fullName}</h2>
+              <h2 className="text-xl font-bold flex gap-2 justify-center">
+                <User />
+                {user.profile.fullName}
+              </h2>
               <div className="mt-4 space-y-2 text-sm text-gray-600">
                 <p className="flex items-center justify-center">
                   <Mail size={14} className="mr-2" /> {user?.email}

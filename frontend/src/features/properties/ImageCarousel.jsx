@@ -13,14 +13,6 @@ const ImageCarousel = ({ images }) => {
     );
   };
 
-  if (!images || images.length === 0) {
-    return (
-      <div className="aspect-video w-full bg-gray-200 rounded-lg flex items-center justify-center">
-        <p>No Image Available</p>
-      </div>
-    );
-  }
-
   return (
     <div id="animation-carousel" className="relative w-full">
       <div className="relative h-56 xl:h-[70vh] md:h-96 rounded-lg overflow-hidden">
@@ -39,12 +31,10 @@ const ImageCarousel = ({ images }) => {
           </div>
         ))}
       </div>
-      {/* Counter */}
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/50 text-white text-xs px-2 py-1 rounded-full">
         {currentIndex + 1} / {images.length}
       </div>
 
-      {/* Prev Button */}
       <button
         type="button"
         onClick={prevSlide}
@@ -69,7 +59,6 @@ const ImageCarousel = ({ images }) => {
         </span>
       </button>
 
-      {/* Next Button */}
       <button
         type="button"
         onClick={nextSlide}

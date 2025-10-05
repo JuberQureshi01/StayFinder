@@ -1,18 +1,14 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logout, logoutUser } from "../../features/auth/authSlice";
-import { Menu, Transition } from "@headlessui/react";
-import {
-  User as UserIcon,
-  LogOut,
-  Briefcase,
-  LayoutDashboard,
-} from "lucide-react";
+import {UserIcon} from "lucide-react"
 
 const UserMenu = ({ isAuthenticated, user }) => {
+  const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const menuRef = useRef();
 
   const handleLogout = () => {
     dispatch(logout());
@@ -20,100 +16,84 @@ const UserMenu = ({ isAuthenticated, user }) => {
     navigate("/");
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
-    <div className="flex items-center space-x-4">
+    <div className="relative flex gap-2 items-center " ref={menuRef}>
       <Link
         to="/create-listing"
-        className="hidden md:block text-gray-700 hover:text-[#FF385C] font-semibold"
+        className="hidden md:block text-gray-700 hover:text-pink-500 font-semibold"
       >
         Become a Host
       </Link>
 
-      <Menu as="div" className="relative">
-        <Menu.Button className="flex items-center space-x-2 border rounded-full p-2 hover:shadow-md transition">
-          <UserIcon size={20} className="text-gray-700" />
-          {isAuthenticated && user && (
-            <span className="font-semibold text-sm hidden sm:block">
-              {user.profile.fullName.split(" ")[0]}
-            </span>
+      <div
+        className="flex items-center border rounded-full p-2 cursor-pointer "
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span className="text-gray-700"><UserIcon size={20} className="text-gray-700" /></span>
+        {isAuthenticated && user && (
+          <span className="hidden sm:block select-none font-semibold text-sm">
+            {user.profile.fullName.split(" ")[0]}
+          </span>
+        )}
+      </div>
+
+      {isOpen && (
+        <div className="absolute right-0 top-full mt-2 w-48 bg-white border rounded-md  z-50">
+          {isAuthenticated && user ? (
+            <div className="flex flex-col py-1">
+              <Link
+                to="/my-bookings"
+                className="px-4 py-2 text-sm hover:bg-gray-100"
+              >
+                My Bookings
+              </Link>
+              <Link
+                to="/profile"
+                className="px-4 py-2 text-sm hover:bg-gray-100"
+              >
+                Profile
+              </Link>
+              <Link
+                to="/my-listings"
+                className="px-4 py-2 text-sm hover:bg-gray-100"
+              >
+                Host Dashboard
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 text-sm text-red-500 hover:bg-red-50 text-left"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col py-1">
+              <Link
+                to="/login"
+                className="px-4 py-2 text-sm hover:bg-gray-100"
+              >
+                Login
+              </Link>
+              <Link
+                to="/register"
+                className="px-4 py-2 text-sm hover:bg-gray-100"
+              >
+                Sign Up
+              </Link>
+            </div>
           )}
-        </Menu.Button>
-        <Transition
-          as={React.Fragment}
-          enter="transition ease-out duration-100"
-          enterFrom="transform opacity-0 scale-95"
-          enterTo="transform opacity-100 scale-100"
-          leave="transition ease-in duration-75"
-          leaveFrom="transform opacity-100 scale-100"
-          leaveTo="transform opacity-0 scale-95"
-        >
-          <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-            {isAuthenticated && user ? (
-              <>
-                <div className="px-1 py-1">
-                  <Menu.Item>
-                    <Link
-                      to="/my-bookings"
-                      className="group flex rounded-md items-center w-full px-2 py-2 text-sm hover:bg-gray-100"
-                    >
-                      <Briefcase className="mr-2 h-5 w-5" /> My Bookings
-                    </Link>
-                  </Menu.Item>
-                  <Menu.Item>
-                    <Link
-                      to="/profile"
-                      className="group flex rounded-md items-center w-full px-2 py-2 text-sm hover:bg-gray-100"
-                    >
-                      <UserIcon className="mr-2 h-5 w-5" /> Profile
-                    </Link>
-                  </Menu.Item>
-                </div>
-               
-                  <div className="px-1 py-1">
-                    <Menu.Item>
-                      <Link
-                        to="/my-listings"
-                        className="group flex rounded-md items-center w-full px-2 py-2 text-sm hover:bg-gray-100"
-                      >
-                        <LayoutDashboard className="mr-2 h-5 w-5" /> Host
-                        Dashboard
-                      </Link>
-                    </Menu.Item>
-                  </div>
-                <div className="px-1 py-1">
-                  <Menu.Item>
-                    <button
-                      onClick={handleLogout}
-                      className="group flex rounded-md items-center w-full px-2 py-2 text-sm text-red-500 hover:bg-red-50"
-                    >
-                      <LogOut className="mr-2 h-5 w-5" /> Logout
-                    </button>
-                  </Menu.Item>
-                </div>
-              </>
-            ) : (
-              <div className="px-1 py-1">
-                <Menu.Item>
-                  <Link
-                    to="/login"
-                    className="font-bold group flex rounded-md items-center w-full px-2 py-2 text-sm hover:bg-gray-100"
-                  >
-                    Login
-                  </Link>
-                </Menu.Item>
-                <Menu.Item>
-                  <Link
-                    to="/register"
-                    className="group flex rounded-md items-center w-full px-2 py-2 text-sm hover:bg-gray-100"
-                  >
-                    Sign Up
-                  </Link>
-                </Menu.Item>
-              </div>
-            )}
-          </Menu.Items>
-        </Transition>
-      </Menu>
+        </div>
+      )}
     </div>
   );
 };

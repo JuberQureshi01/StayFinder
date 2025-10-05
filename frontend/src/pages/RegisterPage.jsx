@@ -16,7 +16,7 @@ const RegisterPage = () => {
     e.preventDefault();
     const result = await dispatch(registerUser({ fullName, email, password }));
     if (registerUser.fulfilled.match(result)) {
-      navigate("/login"); 
+      navigate("/login");
     }
   };
 

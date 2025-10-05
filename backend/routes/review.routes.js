@@ -5,9 +5,8 @@ import { verifyJWT } from '../middlewares/auth.middleware.js';
 
 const router = Router({ mergeParams: true });
 
-router.route("/").get(getPropertyReviews);
-router.route("/").post(verifyJWT, createReview);
-router.route("/:reviewId").delete(verifyJWT, deleteReview)
-
+router.get("/", getPropertyReviews);
+router.post("/", verifyJWT, createReview);
+router.delete("/:reviewId", verifyJWT, deleteReview);
 
 export default router;

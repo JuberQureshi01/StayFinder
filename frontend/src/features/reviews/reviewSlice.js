@@ -79,7 +79,7 @@ const reviewSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-             .addCase(deleteReview.pending, (state) => {
+            .addCase(deleteReview.pending, (state) => {
                 state.loading = true;
             })
             .addCase(deleteReview.fulfilled, (state, action) => {

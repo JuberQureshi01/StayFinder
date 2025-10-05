@@ -16,7 +16,7 @@ const LoginPage = () => {
     dispatch(loginUser({ email, password }));
   };
 
- useEffect(() => {
+  useEffect(() => {
     if (isAuthenticated) {
       navigate("/");
     }

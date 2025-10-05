@@ -11,8 +11,6 @@ const categoryItems = [
   { name: 'City Center', icon: <Building size={24} /> },
 ];
 
-
-
 const Categories = ({ selectedCategory, setSelectedCategory }) => {
   return (
     <div className="container mx-auto px-4 mt-3 sm:px-6 lg:px-8">

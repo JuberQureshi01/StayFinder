@@ -1,7 +1,6 @@
 
 import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
-import { ApiError } from '../utils/apiError.js';
 
 import dotenv from "dotenv"
 
@@ -34,8 +33,7 @@ const uploadOnCloudinary = async (localFilePath) => {
 
     } catch (error) {
         fs.unlinkSync(localFilePath); 
-        // console.error("Cloudinary upload error:", error);
-        throw new ApiError(500,{}, "Error uploading file to Cloudinary.");
+        console.error("Cloudinary upload error:", error);
     }
 };
 

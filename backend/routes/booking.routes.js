@@ -6,7 +6,8 @@ import { verifyJWT } from '../middlewares/auth.middleware.js';
 const router = Router();
 
 router.use(verifyJWT);
-router.route("/my-bookings").get(getMyBookings);
-router.route("/").post(createBooking);
+
+router.post("/", createBooking);
+router.get("/my-bookings", getMyBookings);
 
 export default router;

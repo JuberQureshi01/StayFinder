@@ -4,10 +4,10 @@ import { getAIItinerary, getAIDescription } from '../controllers/ai.controller.j
 import { verifyJWT } from '../middlewares/auth.middleware.js';
 
 const router = Router();
-
 router.use(verifyJWT);
 
-router.route("/generate-itinerary").post(getAIItinerary);
-router.route("/generate-description").post(getAIDescription);
+router.post("/generate-itinerary", getAIItinerary);
+router.post("/generate-description", getAIDescription);
+
 
 export default router;

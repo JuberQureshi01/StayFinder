@@ -5,12 +5,12 @@ import { upload } from '../middlewares/upload.middleware.js';
 
 const router = Router();
 
-router.route("/register").post(registerUser);
-router.route("/login").post(loginUser);
-router.route("/me").get(verifyJWT, getCurrentUser);
-router.route("/profile").patch(verifyJWT, updateUserProfile);
-router.route("/avatar").patch(verifyJWT, upload.single("avatar"), updateUserAvatar);
-router.route("/logout").post(verifyJWT, logoutUser);
+router.post("/register", registerUser);
+router.post("/login", loginUser);
+router.get("/me", verifyJWT, getCurrentUser);
+router.patch("/profile", verifyJWT, updateUserProfile);
+router.patch("/avatar", verifyJWT, upload.single("avatar"), updateUserAvatar);
+router.post("/logout", verifyJWT, logoutUser);
 
 export default router;
 

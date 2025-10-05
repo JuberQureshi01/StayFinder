@@ -10,13 +10,13 @@ const initialState = {
     error: null,
 };
 
-// generating an itinerary
 export const generateItinerary = createAsyncThunk(
     'ai/generateItinerary',
     async (itineraryData, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.post('/ai/generate-itinerary', itineraryData);
             toast.success('Itinerary generated successfully!');
+            console.log(response)
             return response.data.data.itinerary;
         } catch (error) {
             toast.error(error.response?.data?.message || 'Failed to generate itinerary.');
@@ -25,7 +25,6 @@ export const generateItinerary = createAsyncThunk(
     }
 );
 
-//  generating a property description
 export const generateDescription = createAsyncThunk(
     'ai/generateDescription',
     async (descriptionData, { rejectWithValue }) => {
@@ -33,6 +32,7 @@ export const generateDescription = createAsyncThunk(
             console.log(descriptionData)
             const response = await axiosInstance.post('/ai/generate-description', descriptionData);
             toast.success('Description generated successfully!');
+            console.log(response)
             return response.data.data.description;
         } catch (error) {
             toast.error(error.response?.data?.message || 'Failed to generate description.');
@@ -40,19 +40,7 @@ export const generateDescription = createAsyncThunk(
         }
     }
 );
-export const deleteReview = createAsyncThunk(
-    'reviews/deleteReview',
-    async ({ propertyId, reviewId }, { rejectWithValue }) => {
-        try {
-            const response = await axiosInstance.delete(`/properties/${propertyId}/reviews/${reviewId}`);
-            toast.success("Review deleted successfully!");
-            return response.data.data.deletedReviewId;
-        } catch (error) {
-            toast.error(error.response?.data?.message || "Failed to delete review.");
-            return rejectWithValue(error.response?.data);
-        }
-    }
-);
+
 
 
 const aiSlice = createSlice({
@@ -94,17 +82,6 @@ const aiSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-            .addCase(deleteReview.pending, (state) => {
-                state.loading = true;
-            })
-            .addCase(deleteReview.fulfilled, (state, action) => {
-                state.loading = false;
-                state.reviews = state.reviews.filter(r => r._id !== action.payload);
-            })
-            .addCase(deleteReview.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            });
     },
 });
 

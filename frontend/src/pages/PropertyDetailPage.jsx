@@ -26,7 +26,6 @@ const PropertyDetailPage = () => {
   );
   const { isAuthenticated } = useSelector((state) => state.auth);
   const { userBookings } = useSelector((state) => state.bookings);
-
   const [isItineraryModalOpen, setIsItineraryModalOpen] = useState(false);
   const [canReview, setCanReview] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
@@ -34,7 +33,7 @@ const PropertyDetailPage = () => {
 
   const maxAmenitiesToShow = 6;
 
-    useEffect(() => {
+  useEffect(() => {
     if (isItineraryModalOpen) {
       document.body.style.overflow = "hidden";
     } else {
@@ -45,7 +44,6 @@ const PropertyDetailPage = () => {
       document.body.style.overflow = "";
     };
   }, [isItineraryModalOpen]);
-
 
   useEffect(() => {
     if (propertyId) {
@@ -68,9 +66,7 @@ const PropertyDetailPage = () => {
   }, [userBookings, property, isAuthenticated]);
 
   if (loading || !property) {
-    return (
-        <PropertyDetailPageSkeleton/>
-    );
+    return <PropertyDetailPageSkeleton />;
   }
   if (error) {
     return (
@@ -83,7 +79,7 @@ const PropertyDetailPage = () => {
   }
 
   const totalReviews = property.reviews.length;
-  const averageRating = totalReviews > 0 ? 4.87 : "New"; 
+  const averageRating = totalReviews > 0 ? 4.87 : "New";
 
   const descriptionPreview = property.description.substring(0, 250);
   const needsTruncation = property.description.length > 250;
@@ -98,7 +94,6 @@ const PropertyDetailPage = () => {
     <>
       <MainLayout>
         <div className="container mx-auto px-4 xl:px-60 py-8">
-          {/* Header */}
           <div className="mb-4">
             <h1 className="text-3xl font-bold">{property.title}</h1>
             <div className="flex items-center text-sm text-gray-600 mt-2">
@@ -119,10 +114,8 @@ const PropertyDetailPage = () => {
 
           <ImageCarousel images={property.imageUrls} />
 
-          {/* Main Content */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mt-8">
             <div className="lg:col-span-2">
-              {/* Host */}
               <div className="pb-6 border-b">
                 <h2 className="text-2xl font-semibold">
                   Hosted by {property.host?.profile?.fullName}
@@ -130,7 +123,6 @@ const PropertyDetailPage = () => {
                 <p className="text-gray-500">{property.propertyType}</p>
               </div>
 
-              {/* Description */}
               <div className="py-6 border-b">
                 <h3 className="text-xl font-semibold mb-2">Description</h3>
                 <p className="text-gray-700 whitespace-pre-wrap">
@@ -150,7 +142,6 @@ const PropertyDetailPage = () => {
                 )}
               </div>
 
-              {/* Amenities */}
               <div className="py-6 border-b">
                 <h3 className="text-xl font-semibold mb-4">
                   What this place offers
@@ -172,7 +163,6 @@ const PropertyDetailPage = () => {
                 )}
               </div>
 
-              {/* AI Itinerary */}
               <div className="py-6 border-b">
                 <button
                   onClick={() => setIsItineraryModalOpen(true)}
@@ -184,13 +174,11 @@ const PropertyDetailPage = () => {
               </div>
             </div>
 
-            {/* Booking Form */}
             <div className="lg:col-span-1">
               <BookingForm property={property} />
             </div>
           </div>
 
-          {/* Map Section */}
           <div className="py-8 border-t mt-8">
             <h3 className="text-2xl font-semibold mb-4">Where you'll be</h3>
             {coordinates ? (
@@ -206,7 +194,6 @@ const PropertyDetailPage = () => {
             <p className="font-semibold mt-4">{property.location}</p>
           </div>
 
-          {/* Review Section */}
           <ReviewList
             propertyId={property._id}
             averageRating={averageRating}
