@@ -184,24 +184,6 @@ const getPropertyById = asyncHandler(async (req, res) => {
 });
 
 
-const getPropertyByIdForHost = asyncHandler(async (req, res) => {
-    const { propertyId } = req.params;
-
-    const property = await Property.findOne({ _id: propertyId });
-    if (!property) {
-        return res.status(404).json({
-            success: false,
-            message: "Property not found or you are not the host."
-        });
-    }
-
-    res.status(200).json({
-        success: true,
-        message: "Property details retrieved successfully.",
-        data: property
-    });
-});
-
 
 
 const updateProperty = asyncHandler(async (req, res) => {
@@ -287,7 +269,6 @@ export {
     getAllProperties,
     deleteProperty,
     getMyProperties,
-    getPropertyByIdForHost,
     getPropertyCoordinates,
     getPropertyById,
     updateProperty
