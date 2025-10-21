@@ -5,7 +5,6 @@ import {
     getAllProperties,
     deleteProperty,
     getMyProperties,
-    getPropertyByIdForHost,
     updateProperty,
     getPropertyById,
     getPropertyCoordinates
