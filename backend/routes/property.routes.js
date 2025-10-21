@@ -21,7 +21,6 @@ router.get("/my-properties", verifyJWT, getMyProperties);
 router.get("/:propertyId", getPropertyById);
 router.get("/:propertyId/coordinates", getPropertyCoordinates);
 router.post("/", verifyJWT, upload.array("images", 10), createProperty);
-router.get("/host/:propertyId", verifyJWT, getPropertyByIdForHost);
 router.patch("/:propertyId", verifyJWT, upload.array("images", 10), updateProperty);
 router.delete("/:propertyId", verifyJWT, deleteProperty);
 
