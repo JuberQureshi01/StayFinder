@@ -1,25 +1,20 @@
-import { asyncHandler } from '../middlewares/asyncHandler.js';
-import { User } from '../model/user.model.js';
-import { uploadOnCloudinary } from '../config/cloudinary.js';
+import { User } from '../models/user.model.js';
+import { uploadCloudinary } from '../config/cloudinary.js';
 import bcrypt from 'bcryptjs';
-import { getToken } from '../middlewares/auth.middleware.js';
+import { getToken } from '../middleware/authMiddleware.js';
+import { ExpressError } from '../utils/ExpressError.js';
+import { wrapAsync } from '../utils/wrapAsync.js';
 
-const registerUser = asyncHandler(async (req, res) => {
+const registerUser = wrapAsync(async (req, res) => {
     const { email, password, fullName } = req.body;
 
     if (!email || !password || !fullName) {
-        return res.status(400).json({
-            success: false,
-            message: "Email, password, and full name are required"
-        });
+        throw new ExpressError(400, "Email, password, and full name are required")
     }
 
     const existedUser = await User.findOne({ email });
     if (existedUser) {
-        return res.status(409).json({
-            success: false,
-            message: "User already exists"
-        });
+        throw new ExpressError(409, "User already exists")
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -28,42 +23,40 @@ const registerUser = asyncHandler(async (req, res) => {
         email,
         password: hashedPassword,
         profile: { fullName, }
-    }).select("-password");
+    });
+
+    const safeuser = user.toObject();
+    delete safeuser.password;
 
     res.status(201).json({
         success: true,
         message: "User registered successfully",
-        data: user
+        data: safeuser
     });
+    
 });
 
 
-const loginUser = asyncHandler(async (req, res) => {
+const loginUser = wrapAsync(async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
     if (!user) {
-        return res.status(404).json({
-            success: false,
-            message: "User not found"
-        });
+        throw new ExpressError(400, "User not found")
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
-        return res.status(401).json({
-            success: false,
-            message: "Invalid credentials"
-        });
+        throw new ExpressError(401, "Invalid password");
     }
 
-    const token = getToken(res,user._id,user.email);
+    const token = getToken(res, user._id, user.email);
 
     const loggedInUser = await User.findById(user._id).select("-password");
     res.status(200).json({ success: true, message: "Login successful", data: { user: loggedInUser } });
 });
 
-const getCurrentUser = asyncHandler(async (req, res) => {
+const getCurrentUser = wrapAsync(async (req, res) => {
     res.status(200).json({
         success: true,
         message: "User fetched successfully",
@@ -71,31 +64,19 @@ const getCurrentUser = asyncHandler(async (req, res) => {
     });
 });
 
+const updateUserProfile = wrapAsync(async (req, res) => {
+    const { fullName } = req.body;
 
-
-const updateUserProfile = asyncHandler(async (req, res) => {
-    const { fullName, bio } = req.body;
-
-    if (!fullName && !bio) {
-        return res.status(400).json({
-            success: false,
-            message: "At least one field is required to update"
-        });
+    if (!fullName) {
+        throw new ExpressError(400, "Provide the fullName");
     }
-
     const user = await User.findById(req.user._id);
     if (!user) {
-        return res.status(404).json({
-            success: false,
-            message: "User not found"
-        });
+        throw new ExpressError(401, "User Not Found ")
     }
 
     if (fullName) user.profile.fullName = fullName.trim();
-    if (bio) user.profile.bio = bio.trim();
-
     await user.save();
-
     res.status(200).json({
         success: true,
         message: "Profile updated successfully",
@@ -105,22 +86,15 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 
 
 
-const updateUserAvatar = asyncHandler(async (req, res) => {
+const updateUserAvatar = wrapAsync(async (req, res) => {
     const avatarLocalPath = req.file?.path;
-
     if (!avatarLocalPath) {
-        return res.status(400).json({
-            success: false,
-            message: "Avatar file is missing"
-        });
+        throw new ExpressError(400, "Image is not provided");
     }
 
-    const avatar = await uploadOnCloudinary(avatarLocalPath);
+    const avatar = await uploadCloudinary(avatarLocalPath);
     if (!avatar.url) {
-        return res.status(500).json({
-            success: false,
-            message: "Error while uploading avatar"
-        });
+        throw new ExpressError(500, "Error Occured while uploading try again later");
     }
 
     const user = await User.findByIdAndUpdate(
@@ -137,7 +111,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 });
 
 
-const logoutUser = asyncHandler(async (req, res) => {
+const logoutUser = wrapAsync(async (req, res) => {
     const options = {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',

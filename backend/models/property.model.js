@@ -4,7 +4,7 @@ import { Review } from './review.model.js';
 const propertySchema = new Schema({
     host: {
         type: Schema.Types.ObjectId, ref: "User",
-         required: true
+        required: true
     },
     title: {
         type: String,
@@ -18,7 +18,7 @@ const propertySchema = new Schema({
     propertyType: {
         type: String,
         enum: ['APARTMENT', 'HOUSE', 'HOTEL', 'UNIQUE_STAY'],
-         required: true
+        required: true
     },
     category: {
         type: String,
@@ -28,31 +28,28 @@ const propertySchema = new Schema({
     location: {
         type: String,
         required: true,
-        index: true 
+        index: true
     },
     amenities: [String],
     basePricePerNight: {
         type: Number,
-         required: true
+        required: true
     },
     imageUrls: {
         type: [String],
-         default: []
+        default: []
     },
     reviews: [{
-        type: Schema.Types.ObjectId, ref: "Review"
+        type: Schema.Types.ObjectId, 
+        ref: "Review"
     }]
 }, { timestamps: true });
 
 
-propertySchema.pre('deleteOne', { document: true, query: false }, async function(next) {
-    try {
-        const propertyId = this._id;
-        await Review.deleteMany({ property: propertyId });
-        next();
-    } catch (error) {
-        next(error);
-    }
+propertySchema.pre("findOneAndDelete", async function(next) {
+    const id = this.getQuery()._id; 
+    await Review.deleteMany({ property: id });
+    next();
 });
 
 export const Property = mongoose.model("Property", propertySchema);

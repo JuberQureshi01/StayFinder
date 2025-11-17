@@ -1,10 +1,11 @@
 import { GoogleGenAI } from "@google/genai";
+import { ExpressError } from "../utils/ExpressError.js";
 const ai = new GoogleGenAI({});
 
 class AIService {
     async generateItinerary(location, tripType, budget, durationInDays) {
         if (!location || !tripType || !budget || !durationInDays) {
-            throw new Error("Missing required parameters for itinerary generation.");
+            throw new ExpressError(400, "Missing required parameters for itinerary generation.");
         }
 
         const prompt = `Create a ${durationInDays}-day travel itinerary for a trip to ${location}. 

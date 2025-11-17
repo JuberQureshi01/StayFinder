@@ -4,11 +4,11 @@ import toast from 'react-hot-toast';
 
 const initialState = {
     properties: [],
-    myProperties: [], 
+    myProperties: [],
     property: null,
-        searchResults: [], 
-    isSearchActive: false, 
-     coordinates: null,
+    searchResults: [],
+    isSearchActive: false,
+    coordinates: null,
     loading: false,
     error: null,
 };
@@ -20,7 +20,7 @@ export const fetchProperties = createAsyncThunk(
             const response = await axiosInstance.get(`/properties?category=${category}`);
             return response.data.data;
         } catch (error) {
-            return rejectWithValue(error.response?.data);
+            return rejectWithValue(error.response?.data?.message);
         }
     }
 );
@@ -84,7 +84,8 @@ export const createProperty = createAsyncThunk(
             return response.data.data;
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to create listing.");
-            return rejectWithValue(error.response?.data);
+            return  rejectWithValue(
+                error.response?.data?.message);
         }
     }
 );
@@ -108,7 +109,6 @@ export const deleteProperty = createAsyncThunk(
             toast.success("Listing deleted successfully!");
             return response.data.data.deletedPropertyId;
         } catch (error) {
-            toast.error(error.response?.data?.message || "Failed to delete listing.");
             return rejectWithValue(error.response?.data);
         }
     }
@@ -125,7 +125,7 @@ const propertySlice = createSlice({
         clearProperty: (state) => {
             state.property = null;
         },
-         clearSearch: (state) => {
+        clearSearch: (state) => {
             state.searchResults = [];
             state.isSearchActive = false;
         }
@@ -180,7 +180,7 @@ const propertySlice = createSlice({
             .addCase(createProperty.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
-            }) 
+            })
             //for mapbox coordination
             .addCase(fetchPropertyCoordinates.pending, (state) => {
                 state.loading = true;
@@ -193,13 +193,13 @@ const propertySlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-             // Update the property 
-             .addCase(updateProperty.pending, (state) => {
+            // Update the property 
+            .addCase(updateProperty.pending, (state) => {
                 state.loading = true;
             })
             .addCase(updateProperty.fulfilled, (state, action) => {
                 state.loading = false;
-               
+
                 const index = state.myProperties.findIndex(p => p._id === action.payload._id);
                 if (index !== -1) {
                     state.myProperties[index] = action.payload;
@@ -237,5 +237,5 @@ const propertySlice = createSlice({
     },
 });
 
-export const { clearCoordinates,clearProperty,clearSearch } = propertySlice.actions;
+export const { clearCoordinates, clearProperty, clearSearch } = propertySlice.actions;
 export default propertySlice.reducer;

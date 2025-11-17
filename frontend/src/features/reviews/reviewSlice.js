@@ -44,10 +44,10 @@ export const deleteReview = createAsyncThunk(
         try {
             const response = await axiosInstance.delete(`/properties/${propertyId}/reviews/${reviewId}`);
             toast.success("Review deleted successfully!");
-            return response.data.data.deletedReviewId;
+            console.log(response.data);
+            return response.data.deletedReviewId;
         } catch (error) {
-            toast.error(error.response?.data?.message || "Failed to delete review.");
-            return rejectWithValue(error.response?.data);
+            return rejectWithValue(error.response?.data?.message);
         }
     }
 );

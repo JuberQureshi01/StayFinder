@@ -1,40 +1,32 @@
-
-import { v2 as cloudinary } from 'cloudinary';
-import fs from 'fs';
-
-import dotenv from "dotenv"
+import { v2 as cloudinary } from "cloudinary";
+import dotenv from "dotenv";
+import fs from "fs";
 
 dotenv.config({
     path: '.env'
 });
 
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-  secure: true 
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    secure: true
 });
 
-
-
-const uploadOnCloudinary = async (localFilePath) => {
+const uploadCloudinary = async (localFilePath) => {
     try {
         if (!localFilePath) return null;
 
-        
-        const response = await cloudinary.uploader.upload(localFilePath, {
-            resource_type: "auto", 
-            folder: "airbnb-clone" 
+        const response =await cloudinary.uploader.upload(localFilePath, {
+            resource_type: "image",
+            folder: "airbnb-clone",
         });
-
-    
-        fs.unlinkSync(localFilePath); // Remove the locally saved temporary file
+        fs.unlinkSync(localFilePath);
         return response;
-
     } catch (error) {
-        fs.unlinkSync(localFilePath); 
-        console.error("Cloudinary upload error:", error);
+        fs.unlinkSync(localFilePath);
+        console.error("CLoudinary Error Upload", error);
     }
-};
+}
 
-export { uploadOnCloudinary };
+export { uploadCloudinary };

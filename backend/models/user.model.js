@@ -6,10 +6,6 @@ const profileSchema = new Schema(
             type: String,
             trim: true
         },
-        bio: {
-            type: String,
-            trim: true
-        },
         profilePictureUrl: {
             type: String
         },
