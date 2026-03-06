@@ -34,7 +34,9 @@ connectDB()
         console.error("MongoDB connection failed! Server is not running.", err);
     });
 
-
+app.get("/isworking",(req,res)=>{
+    res.send("yes it is working fine");
+});
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/properties", propertyRouter);
 app.use("/api/v1/bookings", bookingRouter);
