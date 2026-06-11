@@ -1,16 +1,23 @@
 import React, { useState } from "react";
 
-const ImageCarousel = ({ images }) => {
+const ImageCarousel = ({ images = [] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const totalImages = images.length;
+
+  if (!totalImages) {
+    return (
+      <div className="relative h-56 xl:h-[70vh] md:h-96 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
+        <p className="text-gray-500">No images available</p>
+      </div>
+    );
+  }
 
   const prevSlide = () => {
-    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+    setCurrentIndex((prev) => (prev === 0 ? totalImages - 1 : prev - 1));
   };
 
   const nextSlide = () => {
-    setCurrentIndex((prev) =>
-      prev === images.length - 1 ? 0 : prev + 1
-    );
+    setCurrentIndex((prev) => (prev === totalImages - 1 ? 0 : prev + 1));
   };
 
   return (

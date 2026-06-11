@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -6,10 +6,9 @@ import {
   fetchPropertyCoordinates,
   clearCoordinates,
 } from "../features/properties/propertySlice";
-import { fetchUserBookings } from "../features/bookings/bookingSlice";
 import MainLayout from "../components/layout/MainLayout";
 import PropertyMap from "../features/properties/PropertyMap";
-import { Star, Bot } from "lucide-react";
+import { Star, Bot, MapPin, ChevronDown, ChevronUp } from "lucide-react";
 import BookingForm from "../features/bookings/BookingForm";
 import AIItineraryModal from "../features/ai/AIItineraryModal";
 import ReviewList from "../features/reviews/ReviewList";
@@ -25,9 +24,7 @@ const PropertyDetailPage = () => {
     (state) => state.properties
   );
   const { isAuthenticated } = useSelector((state) => state.auth);
-  const { userBookings } = useSelector((state) => state.bookings);
   const [isItineraryModalOpen, setIsItineraryModalOpen] = useState(false);
-  const [canReview, setCanReview] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [isAmenitiesExpanded, setIsAmenitiesExpanded] = useState(false);
 
@@ -39,36 +36,25 @@ const PropertyDetailPage = () => {
     } else {
       document.body.style.overflow = "";
     }
-
-    return () => {
-      document.body.style.overflow = "";
-    };
+    return () => { document.body.style.overflow = ""; };
   }, [isItineraryModalOpen]);
 
   useEffect(() => {
     if (propertyId) {
       dispatch(fetchPropertyById(propertyId));
       dispatch(fetchPropertyCoordinates(propertyId));
-      if (isAuthenticated) {
-        dispatch(fetchUserBookings());
-      }
     }
+    return () => { dispatch(clearCoordinates()); };
+  }, [propertyId, dispatch]);
 
-    return () => {
-      dispatch(clearCoordinates());
-    };
-  }, [propertyId, dispatch, isAuthenticated]);
+  const totalReviews = useMemo(() =>
+    property?.reviewCount || property?.reviews?.length || 0, [property]);
+  const averageRating = property?.averageRating || "New";
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      setCanReview(true);
-    }
-  }, [userBookings, property, isAuthenticated]);
-
-  if (loading || !property) {
+  if (loading && !property) {
     return <PropertyDetailPageSkeleton />;
   }
-  if (error) {
+  if (error && !property) {
     return (
       <MainLayout>
         <div className="text-center p-10 text-red-500">
@@ -77,18 +63,14 @@ const PropertyDetailPage = () => {
       </MainLayout>
     );
   }
+  if (!property) return null;
 
-  const totalReviews = property.reviews.length;
-  const averageRating = totalReviews > 0 ? 4.87 : "New";
-
-  const descriptionPreview = property.description.substring(0, 250);
-  const needsTruncation = property.description.length > 250;
-
-  const needsAmenitiesTruncation =
-    property.amenities.length > maxAmenitiesToShow;
+  const descriptionPreview = property.description?.substring(0, 250) || '';
+  const needsTruncation = property.description?.length > 250;
+  const needsAmenitiesTruncation = property.amenities?.length > maxAmenitiesToShow;
   const amenitiesToShow = isAmenitiesExpanded
     ? property.amenities
-    : property.amenities.slice(0, maxAmenitiesToShow);
+    : property.amenities?.slice(0, maxAmenitiesToShow);
 
   return (
     <>
@@ -97,17 +79,12 @@ const PropertyDetailPage = () => {
           <div className="mb-4">
             <h1 className="text-3xl font-bold">{property.title}</h1>
             <div className="flex items-center text-sm text-gray-600 mt-2">
-              <Star
-                size={16}
-                className="text-yellow-500 mr-1"
-                fill="currentColor"
-              />
+              <Star size={16} className="text-yellow-500 mr-1" fill="currentColor" />
               <span>{averageRating}</span>
               <span className="mx-2">·</span>
-              <a href="#reviews" className="underline">
-                {totalReviews} reviews
-              </a>
+              <a href="#reviews" className="underline">{totalReviews} reviews</a>
               <span className="mx-2">·</span>
+              <MapPin size={14} className="mr-1" />
               <span>{property.location}</span>
             </div>
           </div>
@@ -126,48 +103,37 @@ const PropertyDetailPage = () => {
               <div className="py-6 border-b">
                 <h3 className="text-xl font-semibold mb-2">Description</h3>
                 <p className="text-gray-700 whitespace-pre-wrap">
-                  {isDescriptionExpanded
-                    ? property.description
-                    : `${descriptionPreview}...`}
+                  {isDescriptionExpanded ? property.description : `${descriptionPreview}${needsTruncation ? '...' : ''}`}
                 </p>
                 {needsTruncation && (
-                  <button
-                    onClick={() =>
-                      setIsDescriptionExpanded(!isDescriptionExpanded)
-                    }
-                    className="font-semibold text-[#FF385C] hover:underline mt-2"
-                  >
-                    {isDescriptionExpanded ? "Read less" : "Read more"}
+                  <button onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                    className="font-semibold text-[#FF385C] hover:underline mt-2 flex items-center gap-1">
+                    {isDescriptionExpanded ? (<><ChevronUp size={16} /> Read less</>) : (<><ChevronDown size={16} /> Read more</>)}
                   </button>
                 )}
               </div>
 
               <div className="py-6 border-b">
-                <h3 className="text-xl font-semibold mb-4">
-                  What this place offers
-                </h3>
+                <h3 className="text-xl font-semibold mb-4">What this place offers</h3>
                 <div className="grid grid-cols-2 gap-4">
-                  {amenitiesToShow.map((amenity) => (
-                    <div key={amenity} className="flex items-center">
+                  {amenitiesToShow?.map((amenity) => (
+                    <div key={amenity} className="flex items-center gap-2 text-gray-700">
+                      <div className="w-2 h-2 rounded-full bg-[#FF385C]" />
                       {amenity}
                     </div>
                   ))}
                 </div>
                 {needsAmenitiesTruncation && (
-                  <button
-                    onClick={() => setIsAmenitiesExpanded(!isAmenitiesExpanded)}
-                    className="font-semibold text-[#FF385C] hover:underline mt-2"
-                  >
-                    {isAmenitiesExpanded ? "Show less" : "Show more"}
+                  <button onClick={() => setIsAmenitiesExpanded(!isAmenitiesExpanded)}
+                    className="font-semibold text-[#FF385C] hover:underline mt-2 flex items-center gap-1">
+                    {isAmenitiesExpanded ? (<><ChevronUp size={16} /> Show less</>) : (<><ChevronDown size={16} /> Show {property.amenities.length - maxAmenitiesToShow} more</>)}
                   </button>
                 )}
               </div>
 
               <div className="py-6 border-b">
-                <button
-                  onClick={() => setIsItineraryModalOpen(true)}
-                  className="flex items-center space-x-2 font-semibold text-[#FF385C] hover:underline"
-                >
+                <button onClick={() => setIsItineraryModalOpen(true)}
+                  className="flex items-center space-x-2 font-semibold text-[#FF385C] hover:underline">
                   <Bot size={20} />
                   <span>Need a travel plan? Generate an AI itinerary!</span>
                 </button>
@@ -182,32 +148,25 @@ const PropertyDetailPage = () => {
           <div className="py-8 border-t mt-8">
             <h3 className="text-2xl font-semibold mb-4">Where you'll be</h3>
             {coordinates ? (
-              <PropertyMap
-                longitude={coordinates.longitude}
-                latitude={coordinates.latitude}
-              />
+              <PropertyMap longitude={coordinates.longitude} latitude={coordinates.latitude} />
             ) : (
-              <div className="h-[400px] w-full bg-gray-200 rounded-lg flex items-center justify-center">
-                <p>Loading map...</p>
+              <div className="h-[400px] w-full bg-gray-200 rounded-lg flex items-center justify-center animate-pulse">
+                <div className="text-center">
+                  <MapPin size={32} className="text-gray-400 mx-auto mb-2" />
+                  <p className="text-gray-500">Loading map...</p>
+                </div>
               </div>
             )}
             <p className="font-semibold mt-4">{property.location}</p>
           </div>
 
-          <ReviewList
-            propertyId={property._id}
-            averageRating={averageRating}
-            totalReviews={totalReviews}
-          />
-          {canReview && <CreateReviewForm propertyId={property._id} />}
+          <ReviewList propertyId={property._id} averageRating={averageRating} totalReviews={totalReviews} />
+          {isAuthenticated && <CreateReviewForm propertyId={property._id} />}
         </div>
       </MainLayout>
 
       {isItineraryModalOpen && (
-        <AIItineraryModal
-          location={property.location}
-          onClose={() => setIsItineraryModalOpen(false)}
-        />
+        <AIItineraryModal location={property.location} onClose={() => setIsItineraryModalOpen(false)} />
       )}
     </>
   );

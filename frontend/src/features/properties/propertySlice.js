@@ -17,7 +17,7 @@ export const fetchProperties = createAsyncThunk(
     'properties/fetchProperties',
     async (category = 'Trending', { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get(`/properties?category=${category}`);
+            const response = await axiosInstance.get(`/properties?category=${category}&limit=50`);
             return response.data.data;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message);
@@ -138,7 +138,7 @@ const propertySlice = createSlice({
             })
             .addCase(fetchProperties.fulfilled, (state, action) => {
                 state.loading = false;
-                state.properties = action.payload;
+                state.properties = action.payload.properties || action.payload;
             })
             .addCase(fetchProperties.rejected, (state, action) => {
                 state.loading = false;
@@ -228,7 +228,7 @@ const propertySlice = createSlice({
             })
             .addCase(searchProperties.fulfilled, (state, action) => {
                 state.loading = false;
-                state.searchResults = action.payload;
+                state.searchResults = action.payload.properties || action.payload;
             })
             .addCase(searchProperties.rejected, (state, action) => {
                 state.loading = false;

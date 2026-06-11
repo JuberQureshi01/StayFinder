@@ -1,6 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { ExpressError } from "../utils/ExpressError.js";
-const ai = new GoogleGenAI({});
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 class AIService {
     async generateItinerary(location, tripType, budget, durationInDays) {
@@ -14,7 +14,7 @@ Suggest specific activities, local restaurants, and experiences for each day.
 Format the response as a simple, clean text plan.`;
 
         const response = await ai.models.generateContent({
-            model: "gemini-flash-latest",
+            model: "gemini-2.0-flash",
             contents: prompt,
         });
 
@@ -32,7 +32,7 @@ Key amenities include: ${amenities.join(", ")}.
 The tone should be inviting and highlight the best features. Keep it under 150 words.`;
 
         const response = await ai.models.generateContent({
-            model: "gemini-flash-latest",
+            model: "gemini-2.0-flash",
             contents: prompt,
         });
 

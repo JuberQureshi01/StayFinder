@@ -62,7 +62,9 @@ const getPropertyReviews = wrapAsync(async (req, res) => {
     }
 
     const reviews = await Review.find({ property: propertyId })
-        .populate('guest', 'profile.fullName profile.profilePictureUrl');
+        .populate('guest', 'profile.fullName profile.profilePictureUrl')
+        .sort({ createdAt: -1 })
+        .lean();
 
     await redisClient.set(cacheKey, JSON.stringify(reviews), 'EX', REVIEW_CACHE_EXPIRY);
 

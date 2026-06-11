@@ -24,11 +24,11 @@ const CreateListingPage = () => {
   const [imagePreviews, setImagePreviews] = useState([]);
 
   useEffect(()=>{
-     if(!isAuthenticated){
-    toast.error("Login First to procced");
-    navigate("/login")
-  }
-  },[]);
+    if(!isAuthenticated){
+      toast.error("Please login first to create a listing");
+      navigate("/login")
+    }
+  },[isAuthenticated, navigate]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

@@ -11,12 +11,17 @@ export const verifyJWT = wrapAsync(async (req, res, next) => {
         throw new ExpressError(401, "Unauthorized request. Please login first");
     }
 
-    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    let decoded;
+    try {
+        decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    } catch (err) {
+        throw new ExpressError(401, err.name === 'TokenExpiredError' ? 'Session expired. Please login again.' : 'Invalid access token.');
+    }
 
     const user = await User.findById(decoded._id).select("-password");
 
     if (!user) {
-        throw new ExpressError(401, "Invalid access token.");
+        throw new ExpressError(401, "User not found. Please login again.");
     }
 
     req.user = user;
@@ -34,10 +39,11 @@ export const getToken = (res, userId, userEmail) => {
             expiresIn: "7d",
         });
 
+        const isProduction = process.env.NODE_ENV === 'production';
         const cookieOptions = {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: "none",
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax',
             maxAge: 7 * 24 * 60 * 60 * 1000,
         };
 

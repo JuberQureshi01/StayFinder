@@ -6,7 +6,8 @@ import toast from 'react-hot-toast';
 const initialState = {
     user: null,
     isAuthenticated: false,
-    loading: true, 
+    loading: false,
+    initialLoading: true,
     error: null,
 };
 
@@ -80,6 +81,7 @@ const authSlice = createSlice({
             })
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.loading = false;
+                state.initialLoading = false;
                 state.isAuthenticated = true;
                 state.user = action.payload.user;
             })
@@ -106,11 +108,13 @@ const authSlice = createSlice({
             })
             .addCase(getCurrentUser.fulfilled, (state, action) => {
                 state.loading = false;
+                state.initialLoading = false;
                 state.isAuthenticated = true;
                 state.user = action.payload;
             })
             .addCase(getCurrentUser.rejected, (state) => {
                 state.loading = false;
+                state.initialLoading = false;
                 state.isAuthenticated = false;
                 state.user = null;
             });

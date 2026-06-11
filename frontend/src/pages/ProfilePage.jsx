@@ -22,9 +22,9 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (profile) {
-      setFullName(user.profile.fullName || "");
+      setFullName(user?.profile?.fullName || "");
     }
-  }, [profile]);
+  }, [profile, user]);
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
@@ -77,7 +77,7 @@ const ProfilePage = () => {
               </div>
               <h2 className="text-xl font-bold flex gap-2 justify-center">
                 <User />
-                {user.profile.fullName}
+                {user?.profile?.fullName || 'User'}
               </h2>
               <div className="mt-4 space-y-2 text-sm text-gray-600">
                 <p className="flex items-center justify-center">

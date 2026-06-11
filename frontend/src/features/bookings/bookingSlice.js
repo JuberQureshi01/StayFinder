@@ -31,8 +31,10 @@ export const fetchUserBookings = createAsyncThunk(
             const response = await axiosInstance.get('/bookings/my-bookings');
             return response.data.data;
         } catch (error) {
-            toast.error("Failed to fetch your bookings.");
-            return rejectWithValue(error.response?.data);
+            if (error.response?.status !== 404) {
+                toast.error("Failed to fetch your bookings.");
+            }
+            return rejectWithValue(error.response?.data || []);
         }
     }
 );

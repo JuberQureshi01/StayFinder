@@ -2,6 +2,7 @@ import { Booking } from '../models/booking.model.js';
 import { Property } from '../models/property.model.js';
 import { ExpressError } from '../utils/ExpressError.js';
 import { wrapAsync } from '../utils/wrapAsync.js';
+import { redisClient } from '../config/connectredis.js';
 
 
 export const createBooking = wrapAsync(async (req, res) => {
@@ -12,7 +13,7 @@ export const createBooking = wrapAsync(async (req, res) => {
         throw new ExpressError(400, "Property ID, check-in date and check-out date are required.");
     }
 
-    const property = await Property.findById(propertyId);
+    const property = await Property.findById(propertyId).select('host basePricePerNight').lean();
     if (!property) {
         throw new ExpressError(404, "Property not found.");
     }
@@ -34,7 +35,7 @@ export const createBooking = wrapAsync(async (req, res) => {
         property: propertyId,
         checkInDate: { $lt: checkOut },
         checkOutDate: { $gt: checkIn }
-    });
+    }).select('_id').lean();
 
     if (overlappingBooking) {
         throw new ExpressError(400, "This property is already booked for the selected dates.");
@@ -50,6 +51,8 @@ export const createBooking = wrapAsync(async (req, res) => {
         status: 'CONFIRMED',
     });
 
+    await redisClient.del(`bookings:${guestId}`);
+
     return res.status(201).json({
         success: true,
         message: "Booking created successfully.",
@@ -60,17 +63,26 @@ export const createBooking = wrapAsync(async (req, res) => {
 
 export const getMyBookings = wrapAsync(async (req, res) => {
     const guestId = req.user._id;
+    const cacheKey = `bookings:${guestId}`;
+
+    const cached = await redisClient.get(cacheKey);
+    if (cached) {
+        return res.status(200).json({
+            success: true,
+            message: "Bookings retrieved from cache.",
+            data: JSON.parse(cached),
+        });
+    }
 
     const bookings = await Booking.find({ guest: guestId })
         .populate({
             path: 'property',
             select: 'title location imageUrls basePricePerNight'
         })
-        .sort({ checkInDate: -1 });
+        .sort({ checkInDate: -1 })
+        .lean();
 
-    if (!bookings || bookings.length === 0) {
-        throw new ExpressError(404, "No bookings found for this user.");
-    }
+    await redisClient.set(cacheKey, JSON.stringify(bookings), 'EX', 300);
 
     return res.status(200).json({
         success: true,

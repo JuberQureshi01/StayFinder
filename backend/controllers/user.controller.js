@@ -112,10 +112,11 @@ const updateUserAvatar = wrapAsync(async (req, res) => {
 
 
 const logoutUser = wrapAsync(async (req, res) => {
+    const isProduction = process.env.NODE_ENV === 'production';
     const options = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'none'
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax'
     };
 
     res.clearCookie("accessToken", options);
